@@ -1,4 +1,7 @@
+from collections import Counter
 import pickle
+import pandas as pd
+import json
 
 COLOR_DICT = { # We want to make colorless its own color. This labelling system makes all color combos distinct, which will be more difficult for the classifier
     (): 0, # Colorless

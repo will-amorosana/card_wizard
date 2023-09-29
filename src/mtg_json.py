@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
-import sklearn as skp
+from typing import Optional
 import tensorflow as tf
 from collections import Counter
 import json
@@ -18,21 +18,21 @@ def load_atomic(filename: str) -> pd.DataFrame:
     df = pd.json_normalize(cards)
     return df
 
-def prep_df(df: pd.DataFrame, monocolor: bool, creatures: bool, modern: bool, small: bool = False) -> pd.DataFrame:
+def prep_df(df: pd.DataFrame, monocolor: bool, creatures: bool, legal_format: Optional[str] = None) -> pd.DataFrame:
     """
     Preprocesses card DF
     @param df: Input DataFrame
     @param monocolor: If true, return only cards with 1 or less color
     @param creatures: If true, return only creatures
-    @param modern: If true, filter by modern legality (excludes Uro :'( )
+    @param legal_format: Filter for only cards legal in the given format, if provided.
     """
     df["num_colors"] = df["colorIdentity"].map(len)
     if creatures:
         df = df.loc[df['type'].str.contains('Creature')]
     if monocolor:
         df = df.loc[df['num_colors'] <= 1]
-    if modern:
-        df = df.loc[df["legalities.modern"] == "Legal"]
+    if legal_format:
+        df = df.loc[df["legalities."+legal_format.lower()] == "Legal"]
     df = df[COLS_INCLUDE_ALL]
     df["f_is_artifact"] = df["supertypes"].apply(lambda x: 1 if "Artifact" in x else 0)
     df["f_is_enchantment"] = df["supertypes"].apply(lambda x: 1 if "Enchantment" in x else 0)

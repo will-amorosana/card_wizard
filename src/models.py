@@ -5,7 +5,6 @@ import sklearn.tree as sk_tree
 from sklearn.decomposition import PCA
 
 
-
 def preprocess_df(df: pd.DataFrame):
     features = [x for x in list(df.columns) if x.startswith("f_")]
     labels = [x for x in list(df.columns) if x.startswith("label_")]
@@ -19,18 +18,13 @@ def preprocess_df(df: pd.DataFrame):
     return ml_df, train[features], train[labels], test[features], test[labels]
 
 
-def decision_tree():
+def decision_tree(train_features, train_labels, test_features, test_labels):
     tree_clf = sk_tree.DecisionTreeClassifier()
     tree_clf.fit(train_features, train_labels["label_identity"])
-    tree_clf.score(test_features, test_labels["label_identity"])
+    return tree_clf.score(test_features, test_labels["label_identity"]), tree_clf
 
 
 def neural_net_classifier(train_features, train_labels, test_features, test_labels):
-    # SKLearn MLP on mono-colored creatures
     sk_clf = sk_nn.MLPClassifier(solver='sgd', hidden_layer_sizes=(10, 6), max_iter = 20000, verbose= True)
-
     sk_clf.fit(train_features, train_labels["label_identity"])
-
-    sk_clf.score(test_features, test_labels["label_identity"])
-
-def principle_component_analysis
+    return sk_clf.score(test_features, test_labels["label_identity"]), sk_clf
